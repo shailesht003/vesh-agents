@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Open-source agentic framework for revenue intelligence. 6 AI agents that extract, resolve, compute, detect, and explain your business data."
 readme = "README.md"
 license = "Apache-2.0"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 authors = [{ name = "Vesh AI", email = "hello@vesh.ai" }]
 keywords = [
     "agentic-ai",
