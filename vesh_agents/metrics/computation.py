@@ -84,7 +84,7 @@ class MetricComputationEngine:
         if comp_type == "sum":
             return sum(self._get_numeric_field(e, field_name) for e in filtered)
         elif comp_type == "count_distinct":
-            return len(set(e.get(field_name, e.get("entity_id", "")) for e in filtered))
+            return float(len(self._collect_distinct_ids(filtered, field_name)))
         elif comp_type == "sum_positive_delta":
             return sum(max(0, self._get_numeric_field(e, "delta")) for e in filtered)
         elif comp_type == "sum_negative_delta":
@@ -113,6 +113,25 @@ class MetricComputationEngine:
             elif actual != expected:
                 return False
         return True
+
+    _ID_FIELD_FALLBACKS = ("customer_id", "id", "entity_id", "account_id", "record_id", "customer_entity_id")
+
+    @staticmethod
+    def _collect_distinct_ids(entities: list[dict], primary_field: str) -> set:
+        """Collect distinct identifiers, falling back through common ID field names."""
+        ids: set = set()
+        for entity in entities:
+            val = entity.get(primary_field)
+            if val is None:
+                for alt in MetricComputationEngine._ID_FIELD_FALLBACKS:
+                    val = entity.get(alt)
+                    if val is not None:
+                        break
+            if val is not None:
+                ids.add(val)
+            else:
+                ids.add(id(entity))
+        return ids
 
     @staticmethod
     def _get_numeric_field(entity: dict, field_name: str) -> float:
