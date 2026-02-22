@@ -1,0 +1,41 @@
+customer_id,email,company_name,plan,status,mrr_amount,created_at,seats
+cust_001,alex@acmecorp.com,Acme Corporation,enterprise,active,4500,2024-03-15,25
+cust_002,sarah@techstart.io,TechStart Inc,growth,active,1200,2024-04-22,8
+cust_003,mike@cloudnine.co,CloudNine Solutions,starter,active,299,2024-05-10,3
+cust_004,jenny@dataflow.ai,DataFlow AI,enterprise,active,8900,2024-01-08,50
+cust_005,raj@quickship.com,QuickShip Logistics,growth,active,1500,2024-06-01,12
+cust_006,lisa@greenleaf.org,GreenLeaf Analytics,starter,active,299,2024-07-15,2
+cust_007,tom@megasoft.com,MegaSoft Inc,enterprise,active,12000,2023-11-20,100
+cust_008,nina@brightpath.io,BrightPath Education,growth,active,899,2024-08-03,6
+cust_009,dave@ironforge.dev,IronForge Development,growth,active,1800,2024-02-14,15
+cust_010,amy@pixelwave.co,PixelWave Creative,starter,active,299,2024-09-01,2
+cust_011,ben@scaleup.vc,ScaleUp Ventures,enterprise,active,6700,2024-01-30,35
+cust_012,cara@freshbyte.io,FreshByte Foods,growth,active,1100,2024-04-18,7
+cust_013,dan@nextera.com,NextEra Energy Tech,enterprise,active,15000,2023-09-12,120
+cust_014,emma@flowstate.co,FlowState Wellness,starter,canceled,299,2024-05-25,3
+cust_015,frank@buildhub.io,BuildHub Construction,growth,active,2200,2024-03-08,18
+cust_016,grace@aibridge.com,AI Bridge Consulting,enterprise,active,5500,2024-06-20,30
+cust_017,hank@motionlab.co,MotionLab Robotics,growth,active,1650,2024-07-12,10
+cust_018,iris@codebloom.dev,CodeBloom Studios,starter,active,299,2024-08-28,2
+cust_019,jack@peakview.io,PeakView Analytics,enterprise,active,9200,2024-02-05,45
+cust_020,kate@stormcloud.ai,StormCloud Security,growth,canceled,1400,2024-04-10,9
+cust_021,leo@quantum.dev,Quantum Labs,enterprise,active,7800,2024-01-15,40
+cust_022,mia@sunburst.co,Sunburst Marketing,starter,active,299,2024-09-15,2
+cust_023,noah@deepmine.ai,DeepMine Intelligence,enterprise,active,11500,2023-10-28,75
+cust_024,olivia@webcraft.io,WebCraft Agency,growth,active,950,2024-05-30,5
+cust_025,paul@rocketfuel.com,RocketFuel Growth,growth,active,1750,2024-06-14,14
+cust_026,quinn@blueshore.co,BlueShore Finance,enterprise,active,6200,2024-03-22,32
+cust_027,rosa@greentech.io,GreenTech Solutions,growth,canceled,1100,2024-07-08,8
+cust_028,sam@atlas.dev,Atlas Development,starter,active,299,2024-08-12,3
+cust_029,tina@vaultkey.com,VaultKey Security,enterprise,active,13500,2024-01-02,90
+cust_030,uma@skyline.ai,Skyline AI Research,growth,active,2400,2024-04-25,20
+cust_031,victor@hubflow.io,HubFlow Automation,enterprise,active,8100,2024-02-18,48
+cust_032,wendy@coralreef.co,CoralReef Analytics,starter,active,299,2024-09-20,2
+cust_033,xander@forgepoint.com,ForgePoint Capital,enterprise,active,5800,2024-06-05,28
+cust_034,yuki@nimbus.ai,Nimbus Cloud,growth,active,1950,2024-03-30,16
+cust_035,zara@prismdata.io,Prism Data Science,growth,active,1350,2024-07-22,11
+cust_036,adam@titanium.dev,Titanium Systems,enterprise,active,10200,2023-12-10,65
+cust_037,beth@leafnode.co,LeafNode Bio,starter,canceled,299,2024-05-18,2
+cust_038,carl@wavefront.ai,Wavefront Analytics,growth,active,1600,2024-08-08,13
+cust_039,diana@moonshot.vc,Moonshot Ventures,enterprise,active,7400,2024-01-25,38
+cust_040,eric@codesmith.io,CodeSmith Labs,growth,active,1200,2024-04-15,9
