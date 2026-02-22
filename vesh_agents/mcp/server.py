@@ -52,7 +52,9 @@ def get_mcp_tools() -> list[dict]:
         },
         {
             "name": "vesh_analyze_csv",
-            "description": "Full pipeline: import CSV -> resolve entities -> compute metrics -> detect anomalies. Returns complete analysis.",
+            "description": (
+                "Full pipeline: import CSV -> resolve entities -> compute metrics -> detect anomalies. Returns complete analysis."
+            ),
             "inputSchema": {
                 "type": "object",
                 "properties": {"file_path": {"type": "string", "description": "Path to the CSV file with revenue data"}},
@@ -66,35 +68,47 @@ async def handle_tool_call(tool_name: str, arguments: dict) -> str:
     """Handle an MCP tool call and return results."""
     if tool_name == "vesh_import_csv":
         from vesh_agents.connectors.csv import CsvConnector
+
         connector = CsvConnector(connection_id="mcp", config={"file_path": arguments["file_path"]})
         records = await connector.extract_full()
         return json.dumps({"records": [r.to_dict() for r in records], "record_count": len(records)}, default=str)
 
     elif tool_name == "vesh_resolve_entities":
         from vesh_agents.tools.resolution import resolve_entities
+
         return resolve_entities.fn(arguments["records_json"])
 
     elif tool_name == "vesh_compute_metrics":
         from vesh_agents.tools.metrics import compute_saas_metrics
+
         return compute_saas_metrics.fn(arguments["entities_json"])
 
     elif tool_name == "vesh_detect_anomalies":
         from vesh_agents.tools.detection import detect_anomalies
+
         return detect_anomalies.fn(arguments["metrics_json"])
 
     elif tool_name == "vesh_analyze_csv":
+        from datetime import date
+
         from vesh_agents.connectors.csv import CsvConnector
         from vesh_agents.metrics.computation import MetricComputationEngine
         from vesh_agents.metrics.ontology import CORE_METRICS
-        from datetime import date
 
         connector = CsvConnector(connection_id="mcp", config={"file_path": arguments["file_path"]})
         records = await connector.extract_full()
         entity_data = [r.data for r in records]
         engine = MetricComputationEngine()
         computed = engine.compute_all(tenant_id="mcp", period_date=date.today(), entity_data=entity_data)
-        metrics = [{"metric_id": m.metric_id, "name": CORE_METRICS[m.metric_id].name if m.metric_id in CORE_METRICS else m.metric_id,
-                     "value": m.value, "change_percent": m.change_percent} for m in computed]
+        metrics = [
+            {
+                "metric_id": m.metric_id,
+                "name": CORE_METRICS[m.metric_id].name if m.metric_id in CORE_METRICS else m.metric_id,
+                "value": m.value,
+                "change_percent": m.change_percent,
+            }
+            for m in computed
+        ]
         return json.dumps({"records": len(records), "entities": len(entity_data), "metrics": metrics}, default=str)
 
     return json.dumps({"error": f"Unknown tool: {tool_name}"})
@@ -110,6 +124,7 @@ def start_server(port: int = 8765):
 
     try:
         import asyncio
+
         asyncio.get_event_loop().run_forever()
     except KeyboardInterrupt:
         print("\nServer stopped.")

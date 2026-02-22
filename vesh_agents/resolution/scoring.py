@@ -143,13 +143,18 @@ class ScoringEngine:
         total = sum(dimension_scores.get(dim, 0.0) * weight for dim, weight in DIMENSION_WEIGHTS.items())
 
         return PairScore(
-            record_a_id=candidate.record_a_id, record_a_source=candidate.record_a_source,
-            record_b_id=candidate.record_b_id, record_b_source=candidate.record_b_source,
-            total_score=round(total, 4), dimension_scores=dimension_scores, evidence=evidence,
+            record_a_id=candidate.record_a_id,
+            record_a_source=candidate.record_a_source,
+            record_b_id=candidate.record_b_id,
+            record_b_source=candidate.record_b_source,
+            total_score=round(total, 4),
+            dimension_scores=dimension_scores,
+            evidence=evidence,
         )
 
-    def score_candidates(self, candidates: list[BlockingCandidate], records_by_id: dict[str, dict],
-                         threshold: float = 0.50) -> list[PairScore]:
+    def score_candidates(
+        self, candidates: list[BlockingCandidate], records_by_id: dict[str, dict], threshold: float = 0.50
+    ) -> list[PairScore]:
         scored: list[PairScore] = []
         for candidate in candidates:
             record_a = records_by_id.get(f"{candidate.record_a_source}:{candidate.record_a_id}")

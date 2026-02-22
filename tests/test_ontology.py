@@ -1,22 +1,18 @@
 """Tests for metric ontology integrity — ensures the metric graph is well-formed."""
 
-from vesh_agents.metrics.ontology import CORE_METRICS, METRIC_DAG, MetricDef, get_decomposition_children, get_parents
+from vesh_agents.metrics.ontology import CORE_METRICS, METRIC_DAG
 
 
 class TestOntologyIntegrity:
     def test_all_parent_refs_exist(self):
         for metric_id, metric_def in CORE_METRICS.items():
             if metric_def.parent:
-                assert metric_def.parent in CORE_METRICS, (
-                    f"{metric_id}.parent = {metric_def.parent!r} not in CORE_METRICS"
-                )
+                assert metric_def.parent in CORE_METRICS, f"{metric_id}.parent = {metric_def.parent!r} not in CORE_METRICS"
 
     def test_decomposition_children_exist(self):
         for metric_id, metric_def in CORE_METRICS.items():
             for child in metric_def.decomposition:
-                assert child in CORE_METRICS, (
-                    f"{metric_id}.decomposition contains {child!r} not in CORE_METRICS"
-                )
+                assert child in CORE_METRICS, f"{metric_id}.decomposition contains {child!r} not in CORE_METRICS"
 
     def test_related_metrics_exist(self):
         valid_ids = set(CORE_METRICS.keys())
@@ -29,9 +25,7 @@ class TestOntologyIntegrity:
 
     def test_no_self_referencing_decomposition(self):
         for metric_id, metric_def in CORE_METRICS.items():
-            assert metric_id not in metric_def.decomposition, (
-                f"{metric_id} decomposes into itself"
-            )
+            assert metric_id not in metric_def.decomposition, f"{metric_id} decomposes into itself"
 
     def test_dag_has_no_self_loops(self):
         for edge in METRIC_DAG:

@@ -29,8 +29,25 @@ def normalize_company_name(name: str) -> str:
     if not name:
         return ""
     name = name.strip().lower()
-    for suffix in [" inc", " inc.", " incorporated", " llc", " l.l.c.", " ltd", " ltd.", " corp", " corp.",
-                   " corporation", " co", " co.", " company", " gmbh", " ag", " sa", " bv"]:
+    for suffix in [
+        " inc",
+        " inc.",
+        " incorporated",
+        " llc",
+        " l.l.c.",
+        " ltd",
+        " ltd.",
+        " corp",
+        " corp.",
+        " corporation",
+        " co",
+        " co.",
+        " company",
+        " gmbh",
+        " ag",
+        " sa",
+        " bv",
+    ]:
         if name.endswith(suffix):
             name = name[: -len(suffix)]
     name = re.sub(r"[^a-z0-9\s]", "", name)
@@ -55,13 +72,16 @@ class BlockingEngine:
         candidates.update(self._block_by_phone(records_a, source_a, records_b, source_b))
 
         logger.info("Generated %d blocking candidates (%s vs %s)", len(candidates), source_a, source_b)
-        return [
-            BlockingCandidate(a_id, a_src, b_id, b_src, "union") for a_id, a_src, b_id, b_src in candidates
-        ]
+        return [BlockingCandidate(a_id, a_src, b_id, b_src, "union") for a_id, a_src, b_id, b_src in candidates]
 
     def _block_by_field(
-        self, records_a: list[dict], source_a: str, records_b: list[dict], source_b: str,
-        field_names: list[str], normalize_fn,
+        self,
+        records_a: list[dict],
+        source_a: str,
+        records_b: list[dict],
+        source_b: str,
+        field_names: list[str],
+        normalize_fn,
     ) -> set[tuple[str, str, str, str]]:
         index: dict[str, list[tuple[str, str]]] = defaultdict(list)
         candidates: set[tuple[str, str, str, str]] = set()
@@ -87,21 +107,30 @@ class BlockingEngine:
 
     def _block_by_email_domain(self, records_a, source_a, records_b, source_b):
         return self._block_by_field(
-            records_a, source_a, records_b, source_b,
+            records_a,
+            source_a,
+            records_b,
+            source_b,
             ["email", "email_address", "owner_email", "contact_email"],
             lambda e: normalize_email_domain(e),
         )
 
     def _block_by_company_name(self, records_a, source_a, records_b, source_b):
         return self._block_by_field(
-            records_a, source_a, records_b, source_b,
+            records_a,
+            source_a,
+            records_b,
+            source_b,
             ["name", "company_name", "company", "account_name", "organization"],
             lambda n: normalize_company_name(n) if len(normalize_company_name(n)) >= 2 else None,
         )
 
     def _block_by_phone(self, records_a, source_a, records_b, source_b):
         return self._block_by_field(
-            records_a, source_a, records_b, source_b,
+            records_a,
+            source_a,
+            records_b,
+            source_b,
             ["phone", "phone_number", "mobile", "tel"],
             lambda p: normalize_phone(p) if len(normalize_phone(p)) >= 7 else None,
         )

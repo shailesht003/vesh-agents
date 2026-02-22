@@ -35,7 +35,9 @@ class MetricValidator:
         churn = values.get("churn_mrr", 0)
         net_change = new + expansion - contraction - churn
         return ValidationResult(
-            invariant_name="mrr_decomposition_sum", passed=True, severity="error",
+            invariant_name="mrr_decomposition_sum",
+            passed=True,
+            severity="error",
             message=f"MRR components: new={new}, exp={expansion}, contr={contraction}, churn={churn}, net={net_change}",
             details={"new": new, "expansion": expansion, "contraction": contraction, "churn": churn},
         )
@@ -44,7 +46,9 @@ class MetricValidator:
         nrr = values.get("nrr", 0)
         is_valid = 0 <= nrr <= 300
         return ValidationResult(
-            invariant_name="nrr_range", passed=is_valid, severity="warning",
+            invariant_name="nrr_range",
+            passed=is_valid,
+            severity="warning",
             message=f"NRR is {nrr:.1f}% — {'within' if is_valid else 'outside'} expected range (0-300%)",
         )
 
@@ -52,6 +56,8 @@ class MetricValidator:
         denominator = values.get("contraction_mrr", 0) + values.get("churn_mrr", 0)
         is_valid = denominator > 0
         return ValidationResult(
-            invariant_name="quick_ratio_positive_denominator", passed=is_valid, severity="info",
+            invariant_name="quick_ratio_positive_denominator",
+            passed=is_valid,
+            severity="info",
             message=f"Quick ratio denominator: {denominator:.0f}" + ("" if is_valid else " (zero)"),
         )

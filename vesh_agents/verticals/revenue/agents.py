@@ -31,10 +31,26 @@ def create_revenue_orchestrator(model: str = "litellm/deepseek/deepseek-chat") -
         result = await Runner.run(orchestrator, "Analyze revenue from my Stripe data")
     """
     reasoner = Agent(name="InsightReasoner", instructions=REASONER_PROMPT, tools=[explain_anomaly], model=model)
-    detector = Agent(name="AnomalyDetector", instructions=DETECTOR_PROMPT, tools=[detect_anomalies], model=model, handoffs=[handoff(reasoner)])
-    computer = Agent(name="MetricComputer", instructions=METRIC_PROMPT, tools=[compute_saas_metrics, list_available_metrics], model=model, handoffs=[handoff(detector)])
-    resolver = Agent(name="EntityResolver", instructions=RESOLVER_PROMPT, tools=[resolve_entities], model=model, handoffs=[handoff(computer)])
-    connector = Agent(name="DataConnector", instructions=CONNECTOR_PROMPT, tools=[import_csv, extract_stripe, extract_postgres], model=model, handoffs=[handoff(resolver)])
+    detector = Agent(
+        name="AnomalyDetector", instructions=DETECTOR_PROMPT, tools=[detect_anomalies], model=model, handoffs=[handoff(reasoner)]
+    )
+    computer = Agent(
+        name="MetricComputer",
+        instructions=METRIC_PROMPT,
+        tools=[compute_saas_metrics, list_available_metrics],
+        model=model,
+        handoffs=[handoff(detector)],
+    )
+    resolver = Agent(
+        name="EntityResolver", instructions=RESOLVER_PROMPT, tools=[resolve_entities], model=model, handoffs=[handoff(computer)]
+    )
+    connector = Agent(
+        name="DataConnector",
+        instructions=CONNECTOR_PROMPT,
+        tools=[import_csv, extract_stripe, extract_postgres],
+        model=model,
+        handoffs=[handoff(resolver)],
+    )
 
     return Agent(
         name="Vesh Revenue Analyst",
