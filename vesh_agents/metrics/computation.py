@@ -28,7 +28,10 @@ class MetricComputationEngine:
     """Compute all configured metrics for a tenant from resolved entity data."""
 
     def compute_all(
-        self, tenant_id: str, period_date: date, entity_data: list[dict],
+        self,
+        tenant_id: str,
+        period_date: date,
+        entity_data: list[dict],
         previous_snapshots: dict[str, float] | None = None,
     ) -> list[ComputedMetric]:
         previous = previous_snapshots or {}
@@ -53,10 +56,19 @@ class MetricComputationEngine:
                 decomposition = {child: results.get(child, 0.0) for child in children}
             computed.append(
                 ComputedMetric(
-                    metric_id=metric_id, period_date=period_date, grain="daily", value=value,
-                    previous_value=prev, change_absolute=change_abs, change_percent=change_pct,
+                    metric_id=metric_id,
+                    period_date=period_date,
+                    grain="daily",
+                    value=value,
+                    previous_value=prev,
+                    change_absolute=change_abs,
+                    change_percent=change_pct,
                     decomposition=decomposition,
-                    computation_meta={"tenant_id": tenant_id, "entity_count": len(entity_data), "computed_at": period_date.isoformat()},
+                    computation_meta={
+                        "tenant_id": tenant_id,
+                        "entity_count": len(entity_data),
+                        "computed_at": period_date.isoformat(),
+                    },
                 )
             )
         logger.info("Computed %d metrics for tenant %s on %s", len(computed), tenant_id, period_date)

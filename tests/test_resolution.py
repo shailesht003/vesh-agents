@@ -128,9 +128,7 @@ class TestDimensionWeights:
         assert abs(sum(DIMENSION_WEIGHTS.values()) - 1.0) < 0.01
 
     def test_email_has_highest_weight(self):
-        assert DIMENSION_WEIGHTS["email"] >= max(
-            v for k, v in DIMENSION_WEIGHTS.items() if k != "email"
-        )
+        assert DIMENSION_WEIGHTS["email"] >= max(v for k, v in DIMENSION_WEIGHTS.items() if k != "email")
 
 
 class TestBlockingEngine:

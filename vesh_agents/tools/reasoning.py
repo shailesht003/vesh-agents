@@ -27,27 +27,32 @@ def explain_anomaly(anomaly_json: str) -> str:
     for a in anomalies:
         severity_label = "Critical" if a.get("severity", 0) > 0.7 else "Warning" if a.get("severity", 0) > 0.4 else "Info"
         direction = a.get("direction", "changed")
-        summaries.append({
-            "metric": a.get("metric_name", a.get("metric_id", "unknown")),
-            "severity": severity_label,
-            "severity_score": a.get("severity", 0),
-            "what_happened": f"{a.get('metric_name', 'Metric')} {direction} to {a.get('actual_value', 'N/A')}",
-            "detection_method": a.get("detection_method", "unknown"),
-            "deviation": a.get("deviation"),
-            "baseline": a.get("baseline_value"),
-            "actual": a.get("actual_value"),
-            "change_percent": a.get("change_percent"),
-        })
+        summaries.append(
+            {
+                "metric": a.get("metric_name", a.get("metric_id", "unknown")),
+                "severity": severity_label,
+                "severity_score": a.get("severity", 0),
+                "what_happened": f"{a.get('metric_name', 'Metric')} {direction} to {a.get('actual_value', 'N/A')}",
+                "detection_method": a.get("detection_method", "unknown"),
+                "deviation": a.get("deviation"),
+                "baseline": a.get("baseline_value"),
+                "actual": a.get("actual_value"),
+                "change_percent": a.get("change_percent"),
+            }
+        )
 
     summaries.sort(key=lambda x: x.get("severity_score", 0), reverse=True)
 
-    return json.dumps({
-        "anomaly_summaries": summaries,
-        "anomaly_count": len(summaries),
-        "most_severe": summaries[0] if summaries else None,
-        "analysis_prompt": (
-            "Based on these anomalies, provide a root cause analysis. "
-            "Consider: (1) Which metrics are interconnected? (2) What business events "
-            "could cause these patterns? (3) What actions should the team take?"
-        ),
-    }, default=str)
+    return json.dumps(
+        {
+            "anomaly_summaries": summaries,
+            "anomaly_count": len(summaries),
+            "most_severe": summaries[0] if summaries else None,
+            "analysis_prompt": (
+                "Based on these anomalies, provide a root cause analysis. "
+                "Consider: (1) Which metrics are interconnected? (2) What business events "
+                "could cause these patterns? (3) What actions should the team take?"
+            ),
+        },
+        default=str,
+    )

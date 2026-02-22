@@ -33,33 +33,40 @@ def detect_anomalies(metrics_json: str) -> str:
         if not historical and metric.get("change_percent") is not None:
             change_pct = abs(metric["change_percent"])
             if change_pct > 15:
-                all_anomalies.append({
-                    "metric_id": metric_id,
-                    "metric_name": metric.get("name", metric_id),
-                    "detection_method": "change_threshold",
-                    "severity": min(1.0, change_pct / 50),
-                    "actual_value": value,
-                    "change_percent": metric["change_percent"],
-                    "direction": "increase" if metric["change_percent"] > 0 else "decrease",
-                })
+                all_anomalies.append(
+                    {
+                        "metric_id": metric_id,
+                        "metric_name": metric.get("name", metric_id),
+                        "detection_method": "change_threshold",
+                        "severity": min(1.0, change_pct / 50),
+                        "actual_value": value,
+                        "change_percent": metric["change_percent"],
+                        "direction": "increase" if metric["change_percent"] > 0 else "decrease",
+                    }
+                )
             continue
 
         if historical:
             anomalies = pipeline.detect(metric_id, value, date.today(), historical)
             for a in anomalies:
-                all_anomalies.append({
-                    "metric_id": a.metric_id,
-                    "metric_name": metric.get("name", a.metric_id),
-                    "detection_method": a.detection_method,
-                    "severity": a.severity,
-                    "deviation": a.deviation,
-                    "baseline_value": a.baseline_value,
-                    "actual_value": a.actual_value,
-                    "direction": a.context.get("direction", "unknown"),
-                })
+                all_anomalies.append(
+                    {
+                        "metric_id": a.metric_id,
+                        "metric_name": metric.get("name", a.metric_id),
+                        "detection_method": a.detection_method,
+                        "severity": a.severity,
+                        "deviation": a.deviation,
+                        "baseline_value": a.baseline_value,
+                        "actual_value": a.actual_value,
+                        "direction": a.context.get("direction", "unknown"),
+                    }
+                )
 
-    return json.dumps({
-        "anomalies": all_anomalies,
-        "anomaly_count": len(all_anomalies),
-        "metrics_analyzed": len(metrics),
-    }, default=str)
+    return json.dumps(
+        {
+            "anomalies": all_anomalies,
+            "anomaly_count": len(all_anomalies),
+            "metrics_analyzed": len(metrics),
+        },
+        default=str,
+    )

@@ -2,7 +2,6 @@
 
 import logging
 from datetime import UTC, datetime
-from typing import Any
 
 from vesh_agents.connectors.base import (
     BaseConnector,

@@ -37,24 +37,29 @@ def compute_saas_metrics(entities_json: str, period_date: str = "") -> str:
     metrics_output = []
     for m in computed:
         metric_def = CORE_METRICS.get(m.metric_id)
-        metrics_output.append({
-            "metric_id": m.metric_id,
-            "name": metric_def.name if metric_def else m.metric_id,
-            "value": m.value,
-            "unit": metric_def.unit.value if metric_def else "unknown",
-            "direction": metric_def.direction.value if metric_def else "neutral",
-            "change_absolute": m.change_absolute,
-            "change_percent": m.change_percent,
-            "decomposition": m.decomposition,
-        })
+        metrics_output.append(
+            {
+                "metric_id": m.metric_id,
+                "name": metric_def.name if metric_def else m.metric_id,
+                "value": m.value,
+                "unit": metric_def.unit.value if metric_def else "unknown",
+                "direction": metric_def.direction.value if metric_def else "neutral",
+                "change_absolute": m.change_absolute,
+                "change_percent": m.change_percent,
+                "decomposition": m.decomposition,
+            }
+        )
 
-    return json.dumps({
-        "metrics": metrics_output,
-        "metric_count": len(metrics_output),
-        "period_date": pd.isoformat(),
-        "entity_count": len(entities),
-        "validations": [{"name": v.invariant_name, "passed": v.passed, "message": v.message} for v in validations],
-    }, default=str)
+    return json.dumps(
+        {
+            "metrics": metrics_output,
+            "metric_count": len(metrics_output),
+            "period_date": pd.isoformat(),
+            "entity_count": len(entities),
+            "validations": [{"name": v.invariant_name, "passed": v.passed, "message": v.message} for v in validations],
+        },
+        default=str,
+    )
 
 
 @function_tool
@@ -62,12 +67,14 @@ def list_available_metrics() -> str:
     """List all available SaaS metric definitions with their descriptions."""
     metrics = []
     for mid, mdef in CORE_METRICS.items():
-        metrics.append({
-            "metric_id": mid,
-            "name": mdef.name,
-            "description": mdef.description,
-            "category": mdef.category.value,
-            "unit": mdef.unit.value,
-            "direction": mdef.direction.value,
-        })
+        metrics.append(
+            {
+                "metric_id": mid,
+                "name": mdef.name,
+                "description": mdef.description,
+                "category": mdef.category.value,
+                "unit": mdef.unit.value,
+                "direction": mdef.direction.value,
+            }
+        )
     return json.dumps({"metrics": metrics, "count": len(metrics)})
