@@ -1,20 +1,10 @@
 """Abstract connector interface — every data source connector implements this contract."""
 
-import sys
+import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
-
-if sys.version_info >= (3, 11):
-    from enum import StrEnum
-else:
-    from enum import Enum
-
-    class StrEnum(str, Enum):
-        pass
-
-
-import logging
+from enum import StrEnum
 from typing import Any
 
 logger = logging.getLogger(__name__)
