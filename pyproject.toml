@@ -50,9 +50,11 @@ dev = ["pytest", "pytest-asyncio", "ruff", "mypy"]
 vesh = "vesh_agents.cli.main:cli"
 
 [project.urls]
-Homepage = "https://vesh-ai.netlify.app"
-Repository = "https://github.com/shailesht003/Vesh-AI"
-Documentation = "https://vesh-ai.netlify.app/docs"
+Homepage = "https://github.com/shailesht003/vesh-agents"
+Repository = "https://github.com/shailesht003/vesh-agents"
+Documentation = "https://github.com/shailesht003/vesh-agents#readme"
+Issues = "https://github.com/shailesht003/vesh-agents/issues"
+Changelog = "https://github.com/shailesht003/vesh-agents/releases"
 
 [tool.ruff]
 line-length = 130
