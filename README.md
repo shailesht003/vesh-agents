@@ -1,16 +1,12 @@
 <p align="center">
-  <h1 align="center">Vesh Agents</h1>
-  <p align="center">
-    <strong>Open-source agentic framework for revenue intelligence</strong>
-  </p>
-  <p align="center">
-    6 AI agents that extract, resolve, compute, detect, and explain your business data.
-  </p>
-  <p align="center">
-    <a href="https://github.com/shailesht003/vesh-agents/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License"></a>
-    <a href="https://pypi.org/project/vesh-agents/"><img src="https://img.shields.io/badge/python-3.10%2B-blue" alt="Python"></a>
-    <a href="https://github.com/shailesht003/vesh-agents"><img src="https://img.shields.io/github/stars/shailesht003/vesh-agents?style=social" alt="Stars"></a>
-  </p>
+  <img src="assets/social-preview.png" alt="Vesh Agents — Open-source agentic framework for revenue intelligence" width="100%">
+</p>
+
+<p align="center">
+  <a href="https://github.com/shailesht003/vesh-agents/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License"></a>
+  <a href="https://pypi.org/project/vesh-agents/"><img src="https://img.shields.io/badge/python-3.10%2B-blue" alt="Python"></a>
+  <a href="https://github.com/shailesht003/vesh-agents/stargazers"><img src="https://img.shields.io/github/stars/shailesht003/vesh-agents?style=social" alt="Stars"></a>
+  <a href="https://github.com/shailesht003/vesh-agents/actions/workflows/ci.yml"><img src="https://github.com/shailesht003/vesh-agents/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
 </p>
 
 ---
