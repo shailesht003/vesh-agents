@@ -137,7 +137,9 @@ def setup(project_dir: Path | None = None) -> dict:
             result["opencode_path"] = find_opencode()
         else:
             result["opencode_installed"] = False
-            result["install_hint"] = "Install manually: npm install -g opencode-ai (or: curl -fsSL https://opencode.ai/install | bash)"
+            result["install_hint"] = (
+                "Install manually: npm install -g opencode-ai (or: curl -fsSL https://opencode.ai/install | bash)"
+            )
 
     config_path = write_opencode_config(project_dir)
     result["config_written"] = True
@@ -160,7 +162,6 @@ def launch_chat(project_dir: Path | None = None, model: str | None = None, agent
     if model:
         cmd.extend(["--model", model])
 
-    env = os.environ.copy()
     os.execvp(oc, cmd)
 
 
