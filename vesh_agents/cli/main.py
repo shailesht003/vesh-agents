@@ -287,6 +287,70 @@ def login(api_key: str):
     console.print("  You now have access to Vesh AI cloud features.")
 
 
+@cli.command()
+@click.option("--model", default=None, help="LLM model override (e.g. anthropic/claude-sonnet)")
+@click.option("--agent", default="analyst", help="OpenCode agent to use (analyst, explorer)")
+def chat(model: str | None, agent: str):
+    """Open an interactive AI chat for revenue analysis (powered by OpenCode).
+
+    \b
+    Examples:
+      vesh chat
+      vesh chat --model anthropic/claude-sonnet-4-20250514
+      vesh chat --agent explorer
+    """
+    from vesh_agents.cli.opencode import find_opencode, launch_chat
+
+    if not find_opencode():
+        console.print("[yellow]OpenCode not found. Run 'vesh setup' to install and configure it.[/yellow]")
+        sys.exit(1)
+    launch_chat(model=model, agent=agent)
+
+
+@cli.command()
+@click.option("--project-dir", default=None, type=click.Path(exists=True), help="Project directory (default: cwd)")
+def setup(project_dir: str | None):
+    """Install OpenCode and configure Vesh AI agents + MCP server.
+
+    \b
+    Creates:
+      opencode.json        — MCP server config pointing to 'vesh mcp serve'
+      .opencode/agents/    — AI agent definitions for revenue analysis
+    """
+    from pathlib import Path
+
+    from rich.panel import Panel
+
+    from vesh_agents.cli.opencode import setup as run_setup
+
+    print_banner()
+    console.print("[bold]Setting up Vesh AI + OpenCode integration...[/bold]\n")
+
+    target = Path(project_dir) if project_dir else None
+    result = run_setup(target)
+
+    if result["opencode_installed"]:
+        console.print(f"[green]✓[/green] OpenCode found: {result.get('opencode_path', 'installed')}")
+    else:
+        console.print(f"[yellow]⚠[/yellow] OpenCode not installed. {result.get('install_hint', '')}")
+
+    if result["config_written"]:
+        console.print(f"[green]✓[/green] Config written: {result['config_path']}")
+
+    for agent_path in result.get("agents_created", []):
+        console.print(f"[green]✓[/green] Agent created: {agent_path}")
+
+    console.print()
+    console.print(Panel(
+        "[bold]Next steps:[/bold]\n"
+        "  1. [cyan]vesh chat[/cyan]        — open interactive AI analysis\n"
+        "  2. [cyan]vesh analyze csv data.csv[/cyan] — quick offline analysis\n"
+        "  3. [cyan]vesh mcp serve[/cyan]   — start MCP server for external clients",
+        title="Ready",
+        border_style="green",
+    ))
+
+
 @cli.group()
 def mcp():
     """Manage MCP server for external tool integration."""
@@ -294,17 +358,16 @@ def mcp():
 
 
 @mcp.command()
-@click.option("--port", default=8765, help="Port to serve on")
-def serve(port: int):
-    """Start the Vesh AI MCP server."""
-    console.print(f"[bold]Starting Vesh AI MCP server on port {port}...[/bold]")
-    console.print("[dim]Connect from OpenCode, Cursor, or Claude Desktop[/dim]")
-    try:
-        from vesh_agents.mcp.server import start_server
+def serve():
+    """Start the Vesh AI MCP server (stdio transport).
 
-        start_server(port=port)
-    except ImportError:
-        console.print("[yellow]MCP server not yet available. Coming in v0.2.[/yellow]")
+    \b
+    Used by OpenCode, Cursor, Claude Desktop, or any MCP-compatible client.
+    Automatically started by 'vesh chat' — run this for manual MCP client setups.
+    """
+    from vesh_agents.mcp.server import start_server
+
+    start_server()
 
 
 if __name__ == "__main__":

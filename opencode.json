@@ -1,0 +1,13 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "vesh": {
+      "type": "local",
+      "command": "vesh",
+      "args": [
+        "mcp",
+        "serve"
+      ]
+    }
+  }
+}
