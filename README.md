@@ -1,4 +1,8 @@
 <p align="center">
+  <img src="social-preview.png" alt="Vesh Agents — Agentic Revenue Intelligence" width="800">
+</p>
+
+<p align="center">
   <h1 align="center">Vesh Agents</h1>
   <p align="center">
     <strong>Open-source agentic framework for revenue intelligence</strong>
@@ -7,6 +11,7 @@
     6 AI agents that extract, resolve, compute, detect, and explain your business data.
   </p>
   <p align="center">
+    <a href="https://github.com/shailesht003/Vesh-AI/actions/workflows/ci.yml"><img src="https://github.com/shailesht003/Vesh-AI/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
     <a href="https://github.com/shailesht003/Vesh-AI/tree/main/vesh-agents"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License"></a>
     <a href="https://pypi.org/project/vesh-agents/"><img src="https://img.shields.io/badge/python-3.10%2B-blue" alt="Python"></a>
     <a href="https://github.com/shailesht003/Vesh-AI"><img src="https://img.shields.io/github/stars/shailesht003/Vesh-AI?style=social" alt="Stars"></a>
@@ -101,14 +106,14 @@ Each agent has its own tools and instructions. The orchestrator delegates to spe
 
 ## Available Agents
 
-| Agent | Role | Tools |
-|-------|------|-------|
+| Agent | Role | MCP Tools |
+|-------|------|-----------|
 | **DataConnector** | Extract data from sources | `import_csv`, `extract_stripe`, `extract_postgres` |
 | **EntityResolver** | Match records across sources | `resolve_entities` |
-| **MetricComputer** | Compute SaaS metrics | `compute_saas_metrics`, `list_available_metrics` |
+| **MetricComputer** | Compute SaaS metrics | `compute_metrics`, `list_metrics` |
 | **AnomalyDetector** | Find statistical anomalies | `detect_anomalies` |
 | **InsightReasoner** | Explain root causes | `explain_anomaly` |
-| **Vesh Orchestrator** | Coordinate the pipeline | Delegates via handoffs |
+| **Vesh Orchestrator** | Coordinate the pipeline | `analyze_csv` (full pipeline) |
 
 ## SaaS Metrics Computed
 
@@ -128,10 +133,15 @@ Each agent has its own tools and instructions. The orchestrator delegates to spe
 ## CLI Reference
 
 ```bash
-# Analyze data sources
+# Quick offline analysis (no LLM needed)
 vesh analyze csv revenue.csv
 vesh analyze stripe --api-key sk_live_...
 vesh analyze postgres --host db.example.com --database myapp --user admin --password secret
+
+# Interactive AI chat (powered by OpenCode)
+vesh setup                          # one-time: install OpenCode + configure MCP
+vesh chat                           # open the TUI analyst
+vesh chat --model anthropic/claude-sonnet-4-20250514
 
 # Natural language analysis (requires LLM)
 vesh run "Why did churn spike last week?" --source csv:revenue.csv
@@ -140,11 +150,8 @@ vesh run "Why did churn spike last week?" --source csv:revenue.csv
 vesh analyze csv data.csv --output json    # JSON to stdout
 vesh analyze csv data.csv --output rich    # Rich terminal (default)
 
-# Authentication (for Vesh cloud features)
-vesh login vesh_ak_...
-
-# MCP server
-vesh mcp serve --port 8765
+# MCP server (for Cursor, Claude Desktop, or other MCP clients)
+vesh mcp serve
 ```
 
 ## Using as a Python Library
@@ -187,16 +194,34 @@ class CustomerSuccess(Vertical):
 
 ## MCP Integration
 
-Use Vesh Agents with any MCP-compatible client:
+Vesh Agents ships a real [MCP](https://modelcontextprotocol.io) server (FastMCP, stdio transport) exposing 6 tools: `analyze_csv`, `import_csv`, `compute_metrics`, `resolve_entities`, `detect_anomalies`, `list_metrics`.
+
+### OpenCode (recommended)
 
 ```bash
-# Start the MCP server
-vesh mcp serve
+vesh setup   # writes opencode.json + .opencode/agents/
+vesh chat    # launches OpenCode TUI with the Vesh analyst agent
+```
 
-# Connect from OpenCode
-opencode mcp add vesh --type local --command "vesh mcp serve"
+### Cursor / Claude Desktop
 
-# Connect from Cursor/Claude Desktop (add to MCP config)
+Add to your MCP config (`.cursor/mcp.json` or `claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "vesh": {
+      "command": "vesh",
+      "args": ["mcp", "serve"]
+    }
+  }
+}
+```
+
+### Manual
+
+```bash
+vesh mcp serve   # starts stdio MCP server — any MCP client can connect
 ```
 
 ## Vesh AI Cloud (Optional)
@@ -213,13 +238,13 @@ Visit [vesh-ai.netlify.app](https://vesh-ai.netlify.app) to learn more.
 
 ## Contributing
 
-We welcome contributions! Please see our contributing guide for details.
+We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for setup instructions, coding standards, and areas where help is needed.
 
 ```bash
 git clone https://github.com/shailesht003/Vesh-AI.git
 cd Vesh-AI/vesh-agents
 pip install -e ".[dev]"
-pytest
+pytest   # 83 tests
 ```
 
 ## License
