@@ -41,13 +41,15 @@ async def analyze_csv(file_path: str) -> str:
     metrics = []
     for m in computed:
         mdef = CORE_METRICS.get(m.metric_id)
-        metrics.append({
-            "metric_id": m.metric_id,
-            "name": mdef.name if mdef else m.metric_id,
-            "value": m.value,
-            "unit": mdef.unit.value if mdef else "unknown",
-            "change_percent": m.change_percent,
-        })
+        metrics.append(
+            {
+                "metric_id": m.metric_id,
+                "name": mdef.name if mdef else m.metric_id,
+                "value": m.value,
+                "unit": mdef.unit.value if mdef else "unknown",
+                "change_percent": m.change_percent,
+            }
+        )
 
     anomalies = [
         {"metric": m["name"], "change": m["change_percent"]}
@@ -55,12 +57,15 @@ async def analyze_csv(file_path: str) -> str:
         if m.get("change_percent") is not None and abs(m["change_percent"]) > 15
     ]
 
-    return json.dumps({
-        "records_extracted": len(records),
-        "entities_resolved": len(entity_data),
-        "metrics": metrics,
-        "anomalies": anomalies,
-    }, default=str)
+    return json.dumps(
+        {
+            "records_extracted": len(records),
+            "entities_resolved": len(entity_data),
+            "metrics": metrics,
+            "anomalies": anomalies,
+        },
+        default=str,
+    )
 
 
 @mcp.tool()
@@ -72,12 +77,15 @@ async def import_csv(file_path: str) -> str:
     """
     connector = CsvConnector(connection_id="mcp", config={"file_path": file_path})
     records = await connector.extract_full()
-    return json.dumps({
-        "source": "csv",
-        "file": file_path,
-        "record_count": len(records),
-        "records": [r.to_dict() for r in records[:500]],
-    }, default=str)
+    return json.dumps(
+        {
+            "source": "csv",
+            "file": file_path,
+            "record_count": len(records),
+            "records": [r.to_dict() for r in records[:500]],
+        },
+        default=str,
+    )
 
 
 @mcp.tool()
@@ -100,16 +108,18 @@ def compute_metrics(entities_json: str, period_date: str = "") -> str:
     metrics = []
     for m in computed:
         mdef = CORE_METRICS.get(m.metric_id)
-        metrics.append({
-            "metric_id": m.metric_id,
-            "name": mdef.name if mdef else m.metric_id,
-            "value": m.value,
-            "unit": mdef.unit.value if mdef else "unknown",
-            "direction": mdef.direction.value if mdef else "neutral",
-            "change_absolute": m.change_absolute,
-            "change_percent": m.change_percent,
-            "decomposition": m.decomposition,
-        })
+        metrics.append(
+            {
+                "metric_id": m.metric_id,
+                "name": mdef.name if mdef else m.metric_id,
+                "value": m.value,
+                "unit": mdef.unit.value if mdef else "unknown",
+                "direction": mdef.direction.value if mdef else "neutral",
+                "change_absolute": m.change_absolute,
+                "change_percent": m.change_percent,
+                "decomposition": m.decomposition,
+            }
+        )
 
     return json.dumps({"metrics": metrics, "metric_count": len(metrics), "period_date": pd.isoformat()}, default=str)
 
@@ -195,22 +205,26 @@ def detect_anomalies(metrics_json: str) -> str:
 
         if historical:
             for a in pipeline.detect(metric_id, value, date.today(), historical):
-                all_anomalies.append({
-                    "metric_id": a.metric_id,
-                    "metric_name": metric.get("name", a.metric_id),
-                    "method": a.detection_method,
-                    "severity": a.severity,
-                    "actual": a.actual_value,
-                    "baseline": a.baseline_value,
-                })
+                all_anomalies.append(
+                    {
+                        "metric_id": a.metric_id,
+                        "metric_name": metric.get("name", a.metric_id),
+                        "method": a.detection_method,
+                        "severity": a.severity,
+                        "actual": a.actual_value,
+                        "baseline": a.baseline_value,
+                    }
+                )
         elif metric.get("change_percent") is not None and abs(metric["change_percent"]) > 15:
-            all_anomalies.append({
-                "metric_id": metric_id,
-                "metric_name": metric.get("name", metric_id),
-                "method": "change_threshold",
-                "severity": min(1.0, abs(metric["change_percent"]) / 50),
-                "change_percent": metric["change_percent"],
-            })
+            all_anomalies.append(
+                {
+                    "metric_id": metric_id,
+                    "metric_name": metric.get("name", metric_id),
+                    "method": "change_threshold",
+                    "severity": min(1.0, abs(metric["change_percent"]) / 50),
+                    "change_percent": metric["change_percent"],
+                }
+            )
 
     return json.dumps({"anomalies": all_anomalies, "anomaly_count": len(all_anomalies)}, default=str)
 
@@ -218,12 +232,14 @@ def detect_anomalies(metrics_json: str) -> str:
 @mcp.tool()
 def list_metrics() -> str:
     """List all available SaaS metric definitions."""
-    return json.dumps({
-        "metrics": [
-            {"id": mid, "name": m.name, "description": m.description, "category": m.category.value, "unit": m.unit.value}
-            for mid, m in CORE_METRICS.items()
-        ]
-    })
+    return json.dumps(
+        {
+            "metrics": [
+                {"id": mid, "name": m.name, "description": m.description, "category": m.category.value, "unit": m.unit.value}
+                for mid, m in CORE_METRICS.items()
+            ]
+        }
+    )
 
 
 def start_server():

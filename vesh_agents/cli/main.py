@@ -63,7 +63,14 @@ def analyze(
     if output == "rich":
         print_banner()
 
-    asyncio.run(_run_analysis(source, target, api_key, host, port, database, user, password, model, output))
+    try:
+        asyncio.run(_run_analysis(source, target, api_key, host, port, database, user, password, model, output))
+    except FileNotFoundError as e:
+        console.print(f"[red]Error: {e}[/red]")
+        sys.exit(1)
+    except Exception as e:
+        console.print(f"[red]Error: {e}[/red]")
+        sys.exit(1)
 
 
 async def _run_analysis(
@@ -341,14 +348,16 @@ def setup(project_dir: str | None):
         console.print(f"[green]✓[/green] Agent created: {agent_path}")
 
     console.print()
-    console.print(Panel(
-        "[bold]Next steps:[/bold]\n"
-        "  1. [cyan]vesh chat[/cyan]        — open interactive AI analysis\n"
-        "  2. [cyan]vesh analyze csv data.csv[/cyan] — quick offline analysis\n"
-        "  3. [cyan]vesh mcp serve[/cyan]   — start MCP server for external clients",
-        title="Ready",
-        border_style="green",
-    ))
+    console.print(
+        Panel(
+            "[bold]Next steps:[/bold]\n"
+            "  1. [cyan]vesh chat[/cyan]        — open interactive AI analysis\n"
+            "  2. [cyan]vesh analyze csv data.csv[/cyan] — quick offline analysis\n"
+            "  3. [cyan]vesh mcp serve[/cyan]   — start MCP server for external clients",
+            title="Ready",
+            border_style="green",
+        )
+    )
 
 
 @cli.group()
