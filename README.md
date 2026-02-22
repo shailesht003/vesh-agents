@@ -13,7 +13,7 @@
   <p align="center">
     <a href="https://github.com/shailesht003/Vesh-AI/actions/workflows/ci.yml"><img src="https://github.com/shailesht003/Vesh-AI/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
     <a href="https://github.com/shailesht003/Vesh-AI/tree/main/vesh-agents"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License"></a>
-    <a href="https://pypi.org/project/vesh-agents/"><img src="https://img.shields.io/badge/python-3.10%2B-blue" alt="Python"></a>
+    <a href="https://pypi.org/project/vesh-agents/"><img src="https://img.shields.io/badge/python-3.11%2B-blue" alt="Python"></a>
     <a href="https://github.com/shailesht003/Vesh-AI"><img src="https://img.shields.io/github/stars/shailesht003/Vesh-AI?style=social" alt="Stars"></a>
   </p>
 </p>
