@@ -85,7 +85,8 @@ class ClusteringEngine:
             scores = [p.total_score for p in pairs]
             clusters.append(
                 EntityCluster(
-                    cluster_id=root, members=members,
+                    cluster_id=root,
+                    members=members,
                     max_confidence=max(scores) if scores else 0.0,
                     avg_confidence=sum(scores) / len(scores) if scores else 0.0,
                     pair_scores=pairs,

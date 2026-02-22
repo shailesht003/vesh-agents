@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import asyncio
-import json
 import sys
 
 import click
@@ -41,8 +40,18 @@ def cli():
 @click.option("--password", help="Database password (for postgres)")
 @click.option("--model", default=DEFAULT_MODEL, help="LLM model to use (any litellm-compatible model)")
 @click.option("--output", "-o", type=click.Choice(["rich", "json"]), default="rich", help="Output format")
-def analyze(source: str, target: str | None, api_key: str | None, host: str, port: int,
-            database: str | None, user: str | None, password: str | None, model: str, output: str):
+def analyze(
+    source: str,
+    target: str | None,
+    api_key: str | None,
+    host: str,
+    port: int,
+    database: str | None,
+    user: str | None,
+    password: str | None,
+    model: str,
+    output: str,
+):
     """Analyze revenue data from a source.
 
     \b
@@ -57,17 +66,27 @@ def analyze(source: str, target: str | None, api_key: str | None, host: str, por
     asyncio.run(_run_analysis(source, target, api_key, host, port, database, user, password, model, output))
 
 
-async def _run_analysis(source: str, target: str | None, api_key: str | None, host: str, port: int,
-                        database: str | None, user: str | None, password: str | None, model: str, output: str):
+async def _run_analysis(
+    source: str,
+    target: str | None,
+    api_key: str | None,
+    host: str,
+    port: int,
+    database: str | None,
+    user: str | None,
+    password: str | None,
+    model: str,
+    output: str,
+):
     """Run the full analysis pipeline."""
+    from datetime import date
+
     from vesh_agents.connectors.csv import CsvConnector
-    from vesh_agents.detection.statistical import AnomalyDetectionPipeline
     from vesh_agents.metrics.computation import MetricComputationEngine
     from vesh_agents.metrics.ontology import CORE_METRICS
     from vesh_agents.resolution.blocking import BlockingEngine
     from vesh_agents.resolution.clustering import ClusteringEngine
     from vesh_agents.resolution.scoring import ScoringEngine
-    from datetime import date
 
     is_rich = output == "rich"
 
@@ -87,6 +106,7 @@ async def _run_analysis(source: str, target: str | None, api_key: str | None, ho
             console.print("[red]Error: --api-key required for Stripe. Usage: vesh analyze stripe --api-key sk_...[/red]")
             sys.exit(1)
         from vesh_agents.connectors.stripe import StripeConnector
+
         connector = StripeConnector(connection_id="cli", config={}, credentials={"api_key": api_key})
         records = await connector.extract_full()
     elif source == "postgres":
@@ -94,6 +114,7 @@ async def _run_analysis(source: str, target: str | None, api_key: str | None, ho
             console.print("[red]Error: --database, --user, --password required for Postgres[/red]")
             sys.exit(1)
         from vesh_agents.connectors.postgres import PostgresConnector
+
         connector = PostgresConnector(
             connection_id="cli",
             config={"host": host, "port": port, "database": database},
@@ -128,12 +149,13 @@ async def _run_analysis(source: str, target: str | None, api_key: str | None, ho
         all_candidates = []
         for i in range(len(source_list)):
             for j in range(i + 1, len(source_list)):
-                all_candidates.extend(blocking.generate_candidates(
-                    sources[source_list[i]], source_list[i], sources[source_list[j]], source_list[j]
-                ))
+                all_candidates.extend(
+                    blocking.generate_candidates(sources[source_list[i]], source_list[i], sources[source_list[j]], source_list[j])
+                )
         scored = scoring.score_candidates(all_candidates, records_by_id)
         clusters = clustering.cluster(scored)
         from vesh_agents.resolution.canonical import compute_canonical_record
+
         for cluster in clusters:
             entity_data.append(compute_canonical_record(cluster, records_by_id))
     else:
@@ -152,15 +174,17 @@ async def _run_analysis(source: str, target: str | None, api_key: str | None, ho
     metrics_output = []
     for m in computed:
         mdef = CORE_METRICS.get(m.metric_id)
-        metrics_output.append({
-            "metric_id": m.metric_id,
-            "name": mdef.name if mdef else m.metric_id,
-            "value": m.value,
-            "unit": mdef.unit.value if mdef else "unknown",
-            "direction": mdef.direction.value if mdef else "neutral",
-            "change_absolute": m.change_absolute,
-            "change_percent": m.change_percent,
-        })
+        metrics_output.append(
+            {
+                "metric_id": m.metric_id,
+                "name": mdef.name if mdef else m.metric_id,
+                "value": m.value,
+                "unit": mdef.unit.value if mdef else "unknown",
+                "direction": mdef.direction.value if mdef else "neutral",
+                "change_absolute": m.change_absolute,
+                "change_percent": m.change_percent,
+            }
+        )
 
     if is_rich:
         print_agent_complete("MetricComputer", f"{len(computed)} metrics computed")
@@ -174,13 +198,15 @@ async def _run_analysis(source: str, target: str | None, api_key: str | None, ho
     all_anomalies = []
     for m in metrics_output:
         if m.get("change_percent") is not None and abs(m["change_percent"]) > 15:
-            all_anomalies.append({
-                "metric_id": m["metric_id"],
-                "metric_name": m["name"],
-                "severity": min(1.0, abs(m["change_percent"]) / 50),
-                "direction": "increase" if m["change_percent"] > 0 else "decrease",
-                "change_percent": m["change_percent"],
-            })
+            all_anomalies.append(
+                {
+                    "metric_id": m["metric_id"],
+                    "metric_name": m["name"],
+                    "severity": min(1.0, abs(m["change_percent"]) / 50),
+                    "direction": "increase" if m["change_percent"] > 0 else "decrease",
+                    "change_percent": m["change_percent"],
+                }
+            )
 
     if is_rich:
         print_agent_complete("AnomalyDetector", f"{len(all_anomalies)} anomalies found")
@@ -190,13 +216,16 @@ async def _run_analysis(source: str, target: str | None, api_key: str | None, ho
     # JSON output mode
     if output == "json":
         from vesh_agents.output.json_out import write_json
-        write_json({
-            "source": source,
-            "records_extracted": len(records),
-            "entities_resolved": len(entity_data),
-            "metrics": metrics_output,
-            "anomalies": all_anomalies,
-        })
+
+        write_json(
+            {
+                "source": source,
+                "records_extracted": len(records),
+                "entities_resolved": len(entity_data),
+                "metrics": metrics_output,
+                "anomalies": all_anomalies,
+            }
+        )
 
     if is_rich:
         console.print()
@@ -223,6 +252,7 @@ def run(question: str, source: str | None, model: str):
 
     try:
         from agents import Runner
+
         from vesh_agents.agents.orchestrator import create_orchestrator
 
         orchestrator = create_orchestrator(model=model)
@@ -251,6 +281,7 @@ def login(api_key: str):
       vesh login vesh_ak_...
     """
     from vesh_agents.core.metering import set_api_key
+
     set_api_key(api_key)
     console.print("[green]✓[/green] API key saved to ~/.vesh/config")
     console.print("  You now have access to Vesh AI cloud features.")
@@ -270,6 +301,7 @@ def serve(port: int):
     console.print("[dim]Connect from OpenCode, Cursor, or Claude Desktop[/dim]")
     try:
         from vesh_agents.mcp.server import start_server
+
         start_server(port=port)
     except ImportError:
         console.print("[yellow]MCP server not yet available. Coming in v0.2.[/yellow]")

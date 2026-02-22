@@ -1,12 +1,10 @@
 """Tests for data connectors."""
 
-import asyncio
-import os
 from pathlib import Path
 
 import pytest
 
-from vesh_agents.connectors.base import BaseConnector, ChangeType, ConnectorCapabilities, NormalizedRecord
+from vesh_agents.connectors.base import ChangeType, ConnectorCapabilities, NormalizedRecord
 from vesh_agents.connectors.csv import CsvConnector, _detect_column_type, _resolve_field
 
 SAMPLE_CSV = Path(__file__).parent.parent / "examples" / "sample_data.csv"

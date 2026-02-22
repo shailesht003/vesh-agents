@@ -1,12 +1,21 @@
 """Abstract connector interface — every data source connector implements this contract."""
 
+import sys
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
-from enum import StrEnum
-from typing import Any
+
+if sys.version_info >= (3, 11):
+    from enum import StrEnum
+else:
+    from enum import Enum
+
+    class StrEnum(str, Enum):
+        pass
+
 
 import logging
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -94,24 +103,19 @@ class BaseConnector(ABC):
         self.credentials = credentials
 
     @abstractmethod
-    async def test_connection(self) -> bool:
-        ...
+    async def test_connection(self) -> bool: ...
 
     @abstractmethod
-    async def discover(self) -> DiscoveredSchema:
-        ...
+    async def discover(self) -> DiscoveredSchema: ...
 
     @abstractmethod
-    async def extract_full(self, object_types: list[str] | None = None) -> list[NormalizedRecord]:
-        ...
+    async def extract_full(self, object_types: list[str] | None = None) -> list[NormalizedRecord]: ...
 
     @abstractmethod
-    async def extract_incremental(self, since: datetime, object_types: list[str] | None = None) -> list[NormalizedRecord]:
-        ...
+    async def extract_incremental(self, since: datetime, object_types: list[str] | None = None) -> list[NormalizedRecord]: ...
 
     @abstractmethod
-    def get_capabilities(self) -> ConnectorCapabilities:
-        ...
+    def get_capabilities(self) -> ConnectorCapabilities: ...
 
     def _compute_record_hash(self, data: dict) -> str:
         import hashlib

@@ -16,8 +16,11 @@ class DecompositionDetector:
         self.pipeline = AnomalyDetectionPipeline()
 
     def detect_component_anomalies(
-        self, parent_metric_id: str, current_decomposition: dict[str, float],
-        historical_decompositions: list[dict[str, float]], current_date: date,
+        self,
+        parent_metric_id: str,
+        current_decomposition: dict[str, float],
+        historical_decompositions: list[dict[str, float]],
+        current_date: date,
     ) -> list[DetectedAnomaly]:
         children = get_decomposition_children(parent_metric_id)
         anomalies: list[DetectedAnomaly] = []

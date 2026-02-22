@@ -56,8 +56,10 @@ def resolve_entities(records_json: str) -> str:
     for i in range(len(source_list)):
         for j in range(i + 1, len(source_list)):
             candidates = blocking.generate_candidates(
-                sources[source_list[i]], source_list[i],
-                sources[source_list[j]], source_list[j],
+                sources[source_list[i]],
+                source_list[i],
+                sources[source_list[j]],
+                source_list[j],
             )
             all_candidates.extend(candidates)
 
@@ -80,9 +82,12 @@ def resolve_entities(records_json: str) -> str:
             entity["_confidence"] = 1.0
             entities.append(entity)
 
-    return json.dumps({
-        "entities": entities,
-        "entity_count": len(entities),
-        "clusters_found": len(clusters),
-        "source_count": len(source_list),
-    }, default=str)
+    return json.dumps(
+        {
+            "entities": entities,
+            "entity_count": len(entities),
+            "clusters_found": len(clusters),
+            "source_count": len(source_list),
+        },
+        default=str,
+    )

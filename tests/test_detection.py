@@ -49,22 +49,16 @@ class TestStatisticalDetector:
         assert 0.0 <= result.severity <= 1.0
 
     def test_rate_of_change_large_jump(self):
-        result = self.detector.detect_rate_of_change(
-            "mrr", 200.0, 100.0, date(2025, 1, 15), historical_changes=[]
-        )
+        result = self.detector.detect_rate_of_change("mrr", 200.0, 100.0, date(2025, 1, 15), historical_changes=[])
         assert result is not None
         assert result.detection_method == "rate_of_change"
 
     def test_rate_of_change_small_change(self):
-        result = self.detector.detect_rate_of_change(
-            "mrr", 101.0, 100.0, date(2025, 1, 15), historical_changes=[]
-        )
+        result = self.detector.detect_rate_of_change("mrr", 101.0, 100.0, date(2025, 1, 15), historical_changes=[])
         assert result is None
 
     def test_rate_of_change_skips_zero_previous(self):
-        result = self.detector.detect_rate_of_change(
-            "mrr", 100.0, 0.0, date(2025, 1, 15), historical_changes=[]
-        )
+        result = self.detector.detect_rate_of_change("mrr", 100.0, 0.0, date(2025, 1, 15), historical_changes=[])
         assert result is None
 
 

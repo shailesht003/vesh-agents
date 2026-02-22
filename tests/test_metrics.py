@@ -13,7 +13,6 @@ from vesh_agents.metrics.ontology import (
     get_parents,
 )
 
-
 SAMPLE_ENTITIES = [
     {"customer_id": "c1", "status": "active", "mrr_amount": 500, "entity_id": "e1"},
     {"customer_id": "c2", "status": "active", "mrr_amount": 300, "entity_id": "e2"},

@@ -40,9 +40,7 @@ def extract_stripe(api_key: str, object_types: str = "customer,subscription,invo
     from vesh_agents.connectors.stripe import StripeConnector
 
     types = [t.strip() for t in object_types.split(",")]
-    connector = StripeConnector(
-        connection_id="stripe-cli", config={}, credentials={"api_key": api_key}
-    )
+    connector = StripeConnector(connection_id="stripe-cli", config={}, credentials={"api_key": api_key})
     records = asyncio.get_event_loop().run_until_complete(connector.extract_full(types))
     result = {
         "source": "stripe",

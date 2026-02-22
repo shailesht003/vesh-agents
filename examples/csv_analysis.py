@@ -8,14 +8,13 @@ import asyncio
 from datetime import date
 
 from vesh_agents.connectors.csv import CsvConnector
-from vesh_agents.detection.statistical import AnomalyDetectionPipeline
 from vesh_agents.metrics.computation import MetricComputationEngine
 from vesh_agents.metrics.ontology import CORE_METRICS
 from vesh_agents.output.console import (
-    print_anomalies,
-    print_banner,
     print_agent_complete,
     print_agent_start,
+    print_anomalies,
+    print_banner,
     print_metrics_table,
     print_result,
 )
@@ -44,15 +43,17 @@ async def main():
     metrics_output = []
     for m in computed:
         mdef = CORE_METRICS.get(m.metric_id)
-        metrics_output.append({
-            "metric_id": m.metric_id,
-            "name": mdef.name if mdef else m.metric_id,
-            "value": m.value,
-            "unit": mdef.unit.value if mdef else "unknown",
-            "direction": mdef.direction.value if mdef else "neutral",
-            "change_absolute": m.change_absolute,
-            "change_percent": m.change_percent,
-        })
+        metrics_output.append(
+            {
+                "metric_id": m.metric_id,
+                "name": mdef.name if mdef else m.metric_id,
+                "value": m.value,
+                "unit": mdef.unit.value if mdef else "unknown",
+                "direction": mdef.direction.value if mdef else "neutral",
+                "change_absolute": m.change_absolute,
+                "change_percent": m.change_percent,
+            }
+        )
 
     print()
     print_metrics_table(metrics_output)
@@ -62,12 +63,14 @@ async def main():
     anomalies = []
     for m in metrics_output:
         if m.get("change_percent") and abs(m["change_percent"]) > 15:
-            anomalies.append({
-                "metric_id": m["metric_id"],
-                "metric_name": m["name"],
-                "severity": min(1.0, abs(m["change_percent"]) / 50),
-                "direction": "increase" if m["change_percent"] > 0 else "decrease",
-            })
+            anomalies.append(
+                {
+                    "metric_id": m["metric_id"],
+                    "metric_name": m["name"],
+                    "severity": min(1.0, abs(m["change_percent"]) / 50),
+                    "direction": "increase" if m["change_percent"] > 0 else "decrease",
+                }
+            )
     print_agent_complete("AnomalyDetector", f"{len(anomalies)} anomalies")
     print()
     print_anomalies(anomalies)
