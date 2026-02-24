@@ -41,34 +41,13 @@ pip install vesh-agents
 
 ### Analyze a CSV in 30 seconds
 
-```bash
-vesh analyze csv examples/sample_data.csv
-```
-
-```
-  VESH AI   Agentic Revenue Intelligence
-
-  ▸ DataConnector   Extracting from CSV...
-  ✓ DataConnector   40 records extracted
-  ▸ EntityResolver  Resolving entities...
-  ✓ EntityResolver  40 entities resolved
-  ▸ MetricComputer  Computing SaaS metrics...
-  ✓ MetricComputer  10 metrics computed
-  ▸ AnomalyDetector Scanning for anomalies...
-  ✓ AnomalyDetector 2 anomalies found
-
-  ┌─────────────────────────────┬──────────┬─────────┐
-  │ Metric                      │    Value │  Change │
-  ├─────────────────────────────┼──────────┼─────────┤
-  │ Monthly Recurring Revenue   │ $152,413 │    —    │
-  │ Active Customers            │       36 │    —    │
-  │ Average Revenue Per User    │   $4,234 │    —    │
-  │ Net Revenue Retention       │     112% │  +8.2%  │
-  │ Logo Churn Rate             │     2.8% │  +1.1%  │
-  └─────────────────────────────┴──────────┴─────────┘
-
-  ✓ 40 records → 40 entities → 10 metrics → 2 anomalies
-```
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/shailesht003/vesh-agents/main/assets/demo.svg">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/shailesht003/vesh-agents/main/assets/demo.svg">
+    <img alt="Vesh Agents terminal demo" src="https://raw.githubusercontent.com/shailesht003/vesh-agents/main/assets/demo.svg" width="820">
+  </picture>
+</p>
 
 ### Use with any LLM (BYOM)
 
