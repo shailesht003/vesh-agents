@@ -38,7 +38,7 @@ vesh analyze csv your_stripe_export.csv
 
 **Data sources:**
 - CSV files (export from Stripe, ChartMogul, or any spreadsheet)
-- Stripe API directly (`vesh analyze stripe --api-key sk_live_...`)
+- Stripe API directly (`export STRIPE_API_KEY=sk_live_... && vesh analyze stripe`)
 - PostgreSQL databases
 
 **What's different from Baremetrics/ChartMogul/ProfitWell:**
