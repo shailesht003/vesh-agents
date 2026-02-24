@@ -11,10 +11,12 @@
     6 AI agents that extract, resolve, compute, detect, and explain your business data.
   </p>
   <p align="center">
-    <a href="https://github.com/shailesht003/Vesh-AI/actions/workflows/ci.yml"><img src="https://github.com/shailesht003/Vesh-AI/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-    <a href="https://github.com/shailesht003/Vesh-AI/tree/main/vesh-agents"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License"></a>
-    <a href="https://pypi.org/project/vesh-agents/"><img src="https://img.shields.io/badge/python-3.11%2B-blue" alt="Python"></a>
-    <a href="https://github.com/shailesht003/Vesh-AI"><img src="https://img.shields.io/github/stars/shailesht003/Vesh-AI?style=social" alt="Stars"></a>
+    <a href="https://pypi.org/project/vesh-agents/"><img src="https://img.shields.io/pypi/v/vesh-agents?color=blue&label=PyPI" alt="PyPI"></a>
+    <a href="https://pypi.org/project/vesh-agents/"><img src="https://img.shields.io/pypi/dm/vesh-agents?color=green&label=Downloads" alt="Downloads"></a>
+    <a href="https://github.com/shailesht003/vesh-agents/actions/workflows/ci.yml"><img src="https://github.com/shailesht003/vesh-agents/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+    <a href="https://github.com/shailesht003/vesh-agents/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License"></a>
+    <a href="https://pypi.org/project/vesh-agents/"><img src="https://img.shields.io/pypi/pyversions/vesh-agents" alt="Python"></a>
+    <a href="https://github.com/shailesht003/vesh-agents"><img src="https://img.shields.io/github/stars/shailesht003/vesh-agents?style=social" alt="Stars"></a>
   </p>
 </p>
 
@@ -39,28 +41,9 @@ pip install vesh-agents
 
 ### Analyze a CSV in 30 seconds
 
-```bash
-vesh analyze csv examples/sample_data.csv
-```
-
-```
-  VESH AI   Agentic Revenue Intelligence
-
-  ▸ DataConnector  Loading CSV...
-  ✓ DataConnector  40 records extracted
-  ▸ EntityResolver  Resolving entities...
-  ✓ EntityResolver  40 entities resolved
-  ▸ MetricComputer  Computing SaaS metrics...
-  ✓ MetricComputer  10 metrics computed
-
-  ┌─────────────────────────────┬──────────┬─────────┐
-  │ Metric                      │    Value │  Change │
-  ├─────────────────────────────┼──────────┼─────────┤
-  │ Monthly Recurring Revenue   │ $152,413 │    —    │
-  │ Active Customers            │       36 │    —    │
-  │ Average Revenue Per User    │   $4,234 │    —    │
-  └─────────────────────────────┴──────────┴─────────┘
-```
+<p align="center">
+  <img src="assets/demo.svg" alt="Vesh Agents terminal demo" width="820">
+</p>
 
 ### Use with any LLM (BYOM)
 
