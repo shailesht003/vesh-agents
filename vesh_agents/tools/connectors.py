@@ -30,15 +30,19 @@ def import_csv(file_path: str) -> str:
 
 
 @function_tool
-def extract_stripe(api_key: str, object_types: str = "customer,subscription,invoice") -> str:
-    """Extract data from Stripe using the provided API key.
+def extract_stripe(object_types: str = "customer,subscription,invoice") -> str:
+    """Extract data from Stripe using the STRIPE_API_KEY environment variable.
 
     Args:
-        api_key: Stripe API key (sk_live_... or sk_test_...).
         object_types: Comma-separated list of Stripe object types to extract.
     """
+    import os
+
     from vesh_agents.connectors.stripe import StripeConnector
 
+    api_key = os.environ.get("STRIPE_API_KEY", "")
+    if not api_key:
+        return json.dumps({"error": "STRIPE_API_KEY environment variable is not set"})
     types = [t.strip() for t in object_types.split(",")]
     connector = StripeConnector(connection_id="stripe-cli", config={}, credentials={"api_key": api_key})
     records = asyncio.get_event_loop().run_until_complete(connector.extract_full(types))
@@ -52,19 +56,25 @@ def extract_stripe(api_key: str, object_types: str = "customer,subscription,invo
 
 
 @function_tool
-def extract_postgres(host: str, port: int, database: str, user: str, password: str, schema: str = "public") -> str:
+def extract_postgres(host: str, port: int, database: str, schema: str = "public") -> str:
     """Extract data from a PostgreSQL database.
+
+    Credentials are read from PGUSER and PGPASSWORD environment variables.
 
     Args:
         host: Database hostname.
         port: Database port.
         database: Database name.
-        user: Database username.
-        password: Database password.
         schema: Schema to extract from (default: public).
     """
+    import os
+
     from vesh_agents.connectors.postgres import PostgresConnector
 
+    user = os.environ.get("PGUSER", "")
+    password = os.environ.get("PGPASSWORD", "")
+    if not user:
+        return json.dumps({"error": "PGUSER environment variable is not set"})
     connector = PostgresConnector(
         connection_id="pg-cli",
         config={"host": host, "port": port, "database": database, "schema": schema},
