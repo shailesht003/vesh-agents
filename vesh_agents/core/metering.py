@@ -7,12 +7,13 @@ Handles authentication with Vesh AI cloud for premium features
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import Any
 
 import httpx
 
-VESH_CLOUD_URL = "https://veshai.tail7e991f.ts.net"
+VESH_CLOUD_URL = os.environ.get("VESH_CLOUD_URL", "https://cloud.veshai.com")
 CONFIG_DIR = Path.home() / ".vesh"
 CONFIG_FILE = CONFIG_DIR / "config.json"
 

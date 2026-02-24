@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import os
 import sys
 
 import click
@@ -57,8 +58,8 @@ def analyze(
     \b
     Examples:
       vesh analyze csv customers.csv
-      vesh analyze stripe --api-key sk_live_...
-      vesh analyze postgres --host db.example.com --database myapp --user admin --password secret
+      vesh analyze stripe                            # reads STRIPE_API_KEY env var
+      vesh analyze postgres --host db.example.com --database myapp  # reads PGUSER/PGPASSWORD env vars
     """
     if output == "rich":
         print_banner()
@@ -109,16 +110,19 @@ async def _run_analysis(
         connector = CsvConnector(connection_id="cli", config={"file_path": target})
         records = await connector.extract_full()
     elif source == "stripe":
-        if not api_key:
-            console.print("[red]Error: --api-key required for Stripe. Usage: vesh analyze stripe --api-key sk_...[/red]")
+        resolved_key = api_key or os.environ.get("STRIPE_API_KEY")
+        if not resolved_key:
+            console.print("[red]Error: Provide --api-key or set STRIPE_API_KEY env var[/red]")
             sys.exit(1)
         from vesh_agents.connectors.stripe import StripeConnector
 
-        connector = StripeConnector(connection_id="cli", config={}, credentials={"api_key": api_key})
+        connector = StripeConnector(connection_id="cli", config={}, credentials={"api_key": resolved_key})
         records = await connector.extract_full()
     elif source == "postgres":
+        user = user or os.environ.get("PGUSER")
+        password = password or os.environ.get("PGPASSWORD")
         if not all([database, user, password]):
-            console.print("[red]Error: --database, --user, --password required for Postgres[/red]")
+            console.print("[red]Error: --database, --user/PGUSER, --password/PGPASSWORD required for Postgres[/red]")
             sys.exit(1)
         from vesh_agents.connectors.postgres import PostgresConnector
 
@@ -252,7 +256,7 @@ def run(question: str, source: str | None, model: str):
     \b
     Examples:
       vesh run "Why did churn spike last week?" --source csv:revenue.csv
-      vesh run "Analyze our MRR trends" --source stripe:sk_live_...
+      vesh run "Analyze our MRR trends" --source stripe
     """
     print_banner()
     console.print(f"[bold]Question:[/bold] {question}\n")

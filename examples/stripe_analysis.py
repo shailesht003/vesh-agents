@@ -14,8 +14,7 @@ from vesh_agents.verticals.revenue import create_revenue_orchestrator
 
 
 async def main():
-    api_key = os.environ.get("STRIPE_API_KEY")
-    if not api_key:
+    if not os.environ.get("STRIPE_API_KEY"):
         print("Set STRIPE_API_KEY environment variable:")
         print("  export STRIPE_API_KEY=sk_live_...")
         sys.exit(1)
@@ -23,7 +22,7 @@ async def main():
     orchestrator = create_revenue_orchestrator(model="litellm/deepseek/deepseek-chat")
     result = await Runner.run(
         orchestrator,
-        f"Extract data from Stripe using API key {api_key}. "
+        "Extract data from Stripe (credentials are in the environment). "
         "Compute all SaaS metrics, detect anomalies, and explain any issues found.",
     )
     print(result.final_output)
