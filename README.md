@@ -12,7 +12,7 @@
   </p>
   <p align="center">
     <a href="https://pypi.org/project/vesh-agents/"><img src="https://img.shields.io/pypi/v/vesh-agents?color=blue&label=PyPI" alt="PyPI"></a>
-    <a href="https://pypi.org/project/vesh-agents/"><img src="https://img.shields.io/pypi/dm/vesh-agents?color=green&label=Downloads" alt="Downloads"></a>
+    <a href="https://pepy.tech/project/vesh-agents"><img src="https://img.shields.io/pepy/dt/vesh-agents?color=green&label=Downloads" alt="Downloads"></a>
     <a href="https://github.com/shailesht003/vesh-agents/actions/workflows/ci.yml"><img src="https://github.com/shailesht003/vesh-agents/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
     <a href="https://github.com/shailesht003/vesh-agents/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License"></a>
     <a href="https://pypi.org/project/vesh-agents/"><img src="https://img.shields.io/pypi/pyversions/vesh-agents" alt="Python"></a>
@@ -41,9 +41,34 @@ pip install vesh-agents
 
 ### Analyze a CSV in 30 seconds
 
-<p align="center">
-  <img src="assets/demo.svg" alt="Vesh Agents terminal demo" width="820">
-</p>
+```bash
+vesh analyze csv examples/sample_data.csv
+```
+
+```
+  VESH AI   Agentic Revenue Intelligence
+
+  ▸ DataConnector   Extracting from CSV...
+  ✓ DataConnector   40 records extracted
+  ▸ EntityResolver  Resolving entities...
+  ✓ EntityResolver  40 entities resolved
+  ▸ MetricComputer  Computing SaaS metrics...
+  ✓ MetricComputer  10 metrics computed
+  ▸ AnomalyDetector Scanning for anomalies...
+  ✓ AnomalyDetector 2 anomalies found
+
+  ┌─────────────────────────────┬──────────┬─────────┐
+  │ Metric                      │    Value │  Change │
+  ├─────────────────────────────┼──────────┼─────────┤
+  │ Monthly Recurring Revenue   │ $152,413 │    —    │
+  │ Active Customers            │       36 │    —    │
+  │ Average Revenue Per User    │   $4,234 │    —    │
+  │ Net Revenue Retention       │     112% │  +8.2%  │
+  │ Logo Churn Rate             │     2.8% │  +1.1%  │
+  └─────────────────────────────┴──────────┴─────────┘
+
+  ✓ 40 records → 40 entities → 10 metrics → 2 anomalies
+```
 
 ### Use with any LLM (BYOM)
 
