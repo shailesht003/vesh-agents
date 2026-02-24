@@ -81,7 +81,8 @@ print(result.final_output)
 ### Connect to live Stripe
 
 ```bash
-vesh analyze stripe --api-key sk_live_...
+export STRIPE_API_KEY=sk_live_...
+vesh analyze stripe
 ```
 
 ## Architecture
@@ -135,8 +136,8 @@ Each agent has its own tools and instructions. The orchestrator delegates to spe
 ```bash
 # Quick offline analysis (no LLM needed)
 vesh analyze csv revenue.csv
-vesh analyze stripe --api-key sk_live_...
-vesh analyze postgres --host db.example.com --database myapp --user admin --password secret
+vesh analyze stripe                  # reads STRIPE_API_KEY from env
+vesh analyze postgres --host db.example.com --database myapp  # reads PGUSER/PGPASSWORD from env
 
 # Interactive AI chat (powered by OpenCode)
 vesh setup                          # one-time: install OpenCode + configure MCP
