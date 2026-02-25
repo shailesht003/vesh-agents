@@ -114,6 +114,13 @@ class AnomalyDetectionPipeline:
 
     def __init__(self):
         self.detector = StatisticalDetector()
+        self.if_detector = None
+        try:
+            from vesh_agents.detection.isolation_forest import IsolationForestDetector
+
+            self.if_detector = IsolationForestDetector()
+        except ImportError:
+            pass
 
     def detect(
         self, metric_id: str, current_value: float, current_date: date, historical_values: list[float]
@@ -122,6 +129,12 @@ class AnomalyDetectionPipeline:
         z_anomaly = self.detector.detect_zscore(metric_id, current_value, current_date, historical_values)
         if z_anomaly:
             anomalies.append(z_anomaly)
+            
+        if self.if_detector:
+            if_anomaly = self.if_detector.detect(metric_id, current_value, current_date, historical_values)
+            if if_anomaly:
+                anomalies.append(if_anomaly)
+
         if len(historical_values) >= 2:
             previous = historical_values[-1]
             changes = []
@@ -132,3 +145,8 @@ class AnomalyDetectionPipeline:
             if roc_anomaly:
                 anomalies.append(roc_anomaly)
         return anomalies
+
+    def detect_multivariate(self, metrics: list[dict], current_date: date) -> list[DetectedAnomaly]:
+        if self.if_detector:
+            return self.if_detector.detect_multivariate(metrics, current_date)
+        return []
