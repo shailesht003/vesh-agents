@@ -17,6 +17,9 @@
     <a href="https://github.com/shailesht003/vesh-agents/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License"></a>
     <a href="https://pypi.org/project/vesh-agents/"><img src="https://img.shields.io/pypi/pyversions/vesh-agents" alt="Python"></a>
     <a href="https://github.com/shailesht003/vesh-agents"><img src="https://img.shields.io/github/stars/shailesht003/vesh-agents?style=social" alt="Stars"></a>
+    <a href="https://github.com/shailesht003/vesh-agents"><img src="https://img.shields.io/github/forks/shailesht003/vesh-agents?style=social" alt="Forks"></a>
+    <br/>
+    <img src="https://komarev.com/ghpvc/?username=shailesht003-vesh-agents&label=Repo%20Views&color=blueviolet&style=flat" alt="Views">
   </p>
 </p>
 
