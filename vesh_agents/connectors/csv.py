@@ -6,6 +6,7 @@ and generic CSV files with auto-detected column types.
 
 import csv
 import logging
+from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -126,11 +127,14 @@ class CsvConnector(BaseConnector):
             tables=[TableSchema(table_name=table_name, columns=columns, row_count_estimate=len(rows))],
         )
 
-    async def extract_full(self, object_types: list[str] | None = None) -> list[NormalizedRecord]:
+    async def extract_full(
+        self, object_types: list[str] | None = None, progress_callback: Callable[[int, int | None], None] | None = None
+    ) -> list[NormalizedRecord]:
         rows = self._load()
         now = datetime.now(UTC)
         records: list[NormalizedRecord] = []
         table_name = self.file_path.stem if self.file_path else "data"
+        total_rows = len(rows)
 
         id_col = _resolve_field(self._headers, REVENUE_FIELD_ALIASES["customer_id"])
         for idx, row in enumerate(rows):
@@ -157,7 +161,18 @@ class CsvConnector(BaseConnector):
                     record_hash=self._compute_record_hash(data),
                 )
             )
+            if progress_callback and (idx + 1) % 1000 == 0:
+                progress_callback(idx + 1, total_rows)
+
+        if progress_callback:
+            progress_callback(total_rows, total_rows)
+
         return records
 
-    async def extract_incremental(self, since: datetime, object_types: list[str] | None = None) -> list[NormalizedRecord]:
-        return await self.extract_full(object_types)
+    async def extract_incremental(
+        self,
+        since: datetime,
+        object_types: list[str] | None = None,
+        progress_callback: Callable[[int, int | None], None] | None = None,
+    ) -> list[NormalizedRecord]:
+        return await self.extract_full(object_types, progress_callback)

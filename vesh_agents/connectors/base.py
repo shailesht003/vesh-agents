@@ -1,7 +1,6 @@
-"""Abstract connector interface — every data source connector implements this contract."""
-
 import logging
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import StrEnum
@@ -99,10 +98,17 @@ class BaseConnector(ABC):
     async def discover(self) -> DiscoveredSchema: ...
 
     @abstractmethod
-    async def extract_full(self, object_types: list[str] | None = None) -> list[NormalizedRecord]: ...
+    async def extract_full(
+        self, object_types: list[str] | None = None, progress_callback: Callable[[int, int | None], None] | None = None
+    ) -> list[NormalizedRecord]: ...
 
     @abstractmethod
-    async def extract_incremental(self, since: datetime, object_types: list[str] | None = None) -> list[NormalizedRecord]: ...
+    async def extract_incremental(
+        self,
+        since: datetime,
+        object_types: list[str] | None = None,
+        progress_callback: Callable[[int, int | None], None] | None = None,
+    ) -> list[NormalizedRecord]: ...
 
     @abstractmethod
     def get_capabilities(self) -> ConnectorCapabilities: ...

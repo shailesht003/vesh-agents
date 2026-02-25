@@ -1,6 +1,7 @@
 """PostgreSQL connector — standalone, uses psycopg3 directly (no SQLAlchemy)."""
 
 import logging
+from collections.abc import Callable
 from datetime import UTC, datetime
 
 from vesh_agents.connectors.base import (
@@ -84,7 +85,9 @@ class PostgresConnector(BaseConnector):
 
         return DiscoveredSchema(source_type="postgres", tables=tables)
 
-    async def extract_full(self, object_types: list[str] | None = None) -> list[NormalizedRecord]:
+    async def extract_full(
+        self, object_types: list[str] | None = None, progress_callback: Callable[[int, int | None], None] | None = None
+    ) -> list[NormalizedRecord]:
         conn = self._get_conn()
         schema_name = self.config.get("schema", "public")
         records: list[NormalizedRecord] = []
@@ -128,10 +131,19 @@ class PostgresConnector(BaseConnector):
                             record_hash=self._compute_record_hash(row_dict),
                         )
                     )
+                    if progress_callback and len(records) % 500 == 0:
+                        progress_callback(len(records), None)
                 offset += PAGE_SIZE
+        if progress_callback:
+            progress_callback(len(records), len(records))
         return records
 
-    async def extract_incremental(self, since: datetime, object_types: list[str] | None = None) -> list[NormalizedRecord]:
+    async def extract_incremental(
+        self,
+        since: datetime,
+        object_types: list[str] | None = None,
+        progress_callback: Callable[[int, int | None], None] | None = None,
+    ) -> list[NormalizedRecord]:
         conn = self._get_conn()
         schema_name = self.config.get("schema", "public")
         records: list[NormalizedRecord] = []
@@ -182,4 +194,8 @@ class PostgresConnector(BaseConnector):
                             record_hash=self._compute_record_hash(row_dict),
                         )
                     )
+                    if progress_callback and len(records) % 500 == 0:
+                        progress_callback(len(records), None)
+        if progress_callback:
+            progress_callback(len(records), len(records))
         return records

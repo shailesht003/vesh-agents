@@ -4,6 +4,13 @@ from __future__ import annotations
 
 from rich.console import Console
 from rich.panel import Panel
+from rich.progress import (
+    BarColumn,
+    Progress,
+    SpinnerColumn,
+    TextColumn,
+    TimeElapsedColumn,
+)
 from rich.table import Table
 from rich.text import Text
 from rich.tree import Tree
@@ -18,6 +25,19 @@ def print_banner() -> None:
     console.print()
     console.print(Panel(banner, border_style="blue", expand=False))
     console.print()
+
+
+def create_pipeline_progress() -> Progress:
+    """Create a standardized progress bar for the CLI pipeline."""
+    return Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        BarColumn(bar_width=40),
+        TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+        TimeElapsedColumn(),
+        console=console,
+        expand=False,
+    )
 
 
 def print_agent_start(agent_name: str, description: str = "") -> None:

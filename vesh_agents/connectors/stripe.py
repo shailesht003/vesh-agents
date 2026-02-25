@@ -2,6 +2,7 @@
 
 import logging
 import time
+from collections.abc import Callable
 from datetime import UTC, datetime
 from typing import Any
 
@@ -119,7 +120,9 @@ class StripeConnector(BaseConnector):
         ]
         return DiscoveredSchema(source_type="stripe", tables=tables)
 
-    async def extract_full(self, object_types: list[str] | None = None) -> list[NormalizedRecord]:
+    async def extract_full(
+        self, object_types: list[str] | None = None, progress_callback: Callable[[int, int | None], None] | None = None
+    ) -> list[NormalizedRecord]:
         targets = object_types or STRIPE_OBJECT_TYPES
         records: list[NormalizedRecord] = []
         now = datetime.now(UTC)
@@ -141,10 +144,19 @@ class StripeConnector(BaseConnector):
                         record_hash=self._compute_record_hash(item_dict),
                     )
                 )
+                if progress_callback and len(records) % 100 == 0:
+                    progress_callback(len(records), None)
             logger.info("Extracted %d %s records from Stripe", len(records), obj_type)
+        if progress_callback:
+            progress_callback(len(records), len(records))
         return records
 
-    async def extract_incremental(self, since: datetime, object_types: list[str] | None = None) -> list[NormalizedRecord]:
+    async def extract_incremental(
+        self,
+        since: datetime,
+        object_types: list[str] | None = None,
+        progress_callback: Callable[[int, int | None], None] | None = None,
+    ) -> list[NormalizedRecord]:
         records: list[NormalizedRecord] = []
         now = datetime.now(UTC)
         since_ts = int(since.timestamp())
@@ -172,6 +184,10 @@ class StripeConnector(BaseConnector):
                     record_hash=self._compute_record_hash(obj_data),
                 )
             )
+            if progress_callback and len(records) % 100 == 0:
+                progress_callback(len(records), None)
+        if progress_callback:
+            progress_callback(len(records), len(records))
         return records
 
     def _list_objects(self, obj_type: str) -> list[Any]:

@@ -10,8 +10,7 @@ import click
 from rich.console import Console
 
 from vesh_agents.output.console import (
-    print_agent_complete,
-    print_agent_start,
+    create_pipeline_progress,
     print_anomalies,
     print_banner,
     print_metrics_table,
@@ -96,32 +95,53 @@ async def _run_analysis(
     from vesh_agents.resolution.clustering import ClusteringEngine
     from vesh_agents.resolution.scoring import ScoringEngine
 
+    # Pipeline progress bar logic
     is_rich = output == "rich"
+    if is_rich:
+        progress = create_pipeline_progress()
+        progress.start()
+    else:
+        progress = None
 
     # Step 1: Extract
-    if is_rich:
-        print_agent_start("DataConnector", f"Extracting from {source}...")
-
     records = []
+
+    if progress:
+        task_extract = progress.add_task(f"[bold]DataConnector[/bold]  Extracting from {source}...", total=None)
+
+        def progress_cb(current: int, total: int | None):
+            if total is not None:
+                progress.update(task_extract, completed=current, total=total)
+            else:
+                progress.update(task_extract, completed=current)
+    else:
+        progress_cb = None
+
     if source == "csv":
         if not target:
+            if progress:
+                progress.stop()
             console.print("[red]Error: CSV file path required. Usage: vesh analyze csv <file.csv>[/red]")
             sys.exit(1)
         connector = CsvConnector(connection_id="cli", config={"file_path": target})
-        records = await connector.extract_full()
+        records = await connector.extract_full(progress_callback=progress_cb)
     elif source == "stripe":
         resolved_key = api_key or os.environ.get("STRIPE_API_KEY")
         if not resolved_key:
+            if progress:
+                progress.stop()
             console.print("[red]Error: Provide --api-key or set STRIPE_API_KEY env var[/red]")
             sys.exit(1)
         from vesh_agents.connectors.stripe import StripeConnector
 
         connector = StripeConnector(connection_id="cli", config={}, credentials={"api_key": resolved_key})
-        records = await connector.extract_full()
+        records = await connector.extract_full(progress_callback=progress_cb)
     elif source == "postgres":
         user = user or os.environ.get("PGUSER")
         password = password or os.environ.get("PGPASSWORD")
         if not all([database, user, password]):
+            if progress:
+                progress.stop()
             console.print("[red]Error: --database, --user/PGUSER, --password/PGPASSWORD required for Postgres[/red]")
             sys.exit(1)
         from vesh_agents.connectors.postgres import PostgresConnector
@@ -131,17 +151,25 @@ async def _run_analysis(
             config={"host": host, "port": port, "database": database},
             credentials={"user": user, "password": password},
         )
-        records = await connector.extract_full()
+        records = await connector.extract_full(progress_callback=progress_cb)
 
-    if is_rich:
-        print_agent_complete("DataConnector", f"{len(records)} records extracted")
+    if progress:
+        progress.update(
+            task_extract,
+            description=f"[bold green]✓[/bold green] [bold]DataConnector[/bold]  {len(records)} records extracted",
+            completed=1,
+            total=1,
+        )
+
     if not records:
+        if progress:
+            progress.stop()
         console.print("[yellow]No records found. Check your data source.[/yellow]")
         return
 
-    # Step 2: Entity resolution (single-source just passes through)
-    if is_rich:
-        print_agent_start("EntityResolver", "Resolving entities...")
+    # Step 2: Entity resolution
+    if progress:
+        task_resolve = progress.add_task("[bold]EntityResolver[/bold]  Resolving entities...", total=None)
 
     entity_data = []
     sources: dict[str, list[dict]] = {}
@@ -172,12 +200,17 @@ async def _run_analysis(
     else:
         entity_data = [r.data for r in records]
 
-    if is_rich:
-        print_agent_complete("EntityResolver", f"{len(entity_data)} entities resolved")
+    if progress:
+        progress.update(
+            task_resolve,
+            description=f"[bold green]✓[/bold green] [bold]EntityResolver[/bold]  {len(entity_data)} entities resolved",
+            completed=1,
+            total=1,
+        )
 
     # Step 3: Compute metrics
-    if is_rich:
-        print_agent_start("MetricComputer", "Computing SaaS metrics...")
+    if progress:
+        task_compute = progress.add_task("[bold]MetricComputer[/bold]  Computing SaaS metrics...", total=None)
 
     engine = MetricComputationEngine()
     computed = engine.compute_all(tenant_id="cli", period_date=date.today(), entity_data=entity_data)
@@ -197,14 +230,17 @@ async def _run_analysis(
             }
         )
 
-    if is_rich:
-        print_agent_complete("MetricComputer", f"{len(computed)} metrics computed")
-        console.print()
-        print_metrics_table(metrics_output)
+    if progress:
+        progress.update(
+            task_compute,
+            description=f"[bold green]✓[/bold green] [bold]MetricComputer[/bold]  {len(computed)} metrics computed",
+            completed=1,
+            total=1,
+        )
 
     # Step 4: Detect anomalies
-    if is_rich:
-        print_agent_start("AnomalyDetector", "Scanning for anomalies...")
+    if progress:
+        task_detect = progress.add_task("[bold]AnomalyDetector[/bold]  Scanning for anomalies...", total=None)
 
     all_anomalies = []
     for m in metrics_output:
@@ -219,8 +255,16 @@ async def _run_analysis(
                 }
             )
 
-    if is_rich:
-        print_agent_complete("AnomalyDetector", f"{len(all_anomalies)} anomalies found")
+    if progress:
+        progress.update(
+            task_detect,
+            description=f"[bold green]✓[/bold green] [bold]AnomalyDetector[/bold]  {len(all_anomalies)} anomalies found",
+            completed=1,
+            total=1,
+        )
+        progress.stop()
+        console.print()
+        print_metrics_table(metrics_output)
         console.print()
         print_anomalies(all_anomalies)
 
