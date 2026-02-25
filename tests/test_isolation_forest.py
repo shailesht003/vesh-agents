@@ -45,12 +45,12 @@ class TestIsolationForestDetector:
     def test_detects_multivariate_anomaly(self):
         mrr_hist = [1000.0 + (i * 10) for i in range(30)]
         churn_hist = [5.0 + (i % 2) for i in range(30)]
-        
+
         metrics = [
             {"metric_id": "mrr", "value": 1300.0, "historical_values": mrr_hist},
-            {"metric_id": "churn", "value": 15.0, "historical_values": churn_hist}
+            {"metric_id": "churn", "value": 15.0, "historical_values": churn_hist},
         ]
-        
+
         anomalies = self.detector.detect_multivariate(metrics, date(2025, 1, 15))
         assert anomalies
         assert len(anomalies) == 1

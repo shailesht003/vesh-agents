@@ -76,9 +76,10 @@ class TestAnomalyDetectionPipeline:
         assert len(anomalies) >= 1
         methods = {a.detection_method for a in anomalies}
         assert "z_score" in methods
-        
+
         try:
             import sklearn  # noqa: F401
+
             assert "isolation_forest" in methods
         except ImportError:
             pass

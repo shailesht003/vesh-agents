@@ -129,7 +129,7 @@ class AnomalyDetectionPipeline:
         z_anomaly = self.detector.detect_zscore(metric_id, current_value, current_date, historical_values)
         if z_anomaly:
             anomalies.append(z_anomaly)
-            
+
         if self.if_detector:
             if_anomaly = self.if_detector.detect(metric_id, current_value, current_date, historical_values)
             if if_anomaly:
