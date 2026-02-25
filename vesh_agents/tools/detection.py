@@ -62,6 +62,23 @@ def detect_anomalies(metrics_json: str) -> str:
                     }
                 )
 
+    multi_anomalies = pipeline.detect_multivariate(metrics, date.today())
+    for a in multi_anomalies:
+        all_anomalies.append(
+            {
+                "metric_id": a.metric_id,
+                "metric_name": "Multivariate Anomaly",
+                "detection_method": a.detection_method,
+                "severity": a.severity,
+                "deviation": a.deviation,
+                "baseline_value": a.baseline_value,
+                "actual_value": a.actual_value,
+                "direction": "unknown",
+                "involved_metrics": a.context.get("involved_metrics", []),
+                "current_values": a.context.get("current_values", {}),
+            }
+        )
+
     return json.dumps(
         {
             "anomalies": all_anomalies,

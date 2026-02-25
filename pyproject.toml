@@ -42,7 +42,8 @@ dependencies = [
 [project.optional-dependencies]
 stripe = ["stripe>=8.0"]
 postgres = ["psycopg[binary]>=3.1"]
-all = ["vesh-agents[stripe,postgres]"]
+ml = ["scikit-learn>=1.3.0"]
+all = ["vesh-agents[stripe,postgres,ml]"]
 dev = ["pytest", "pytest-asyncio", "ruff", "mypy"]
 
 [project.scripts]

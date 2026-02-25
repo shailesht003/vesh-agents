@@ -77,6 +77,13 @@ class TestAnomalyDetectionPipeline:
         methods = {a.detection_method for a in anomalies}
         assert "z_score" in methods
 
+        try:
+            import sklearn  # noqa: F401
+
+            assert "isolation_forest" in methods
+        except ImportError:
+            pass
+
     def test_pipeline_empty_history(self):
         pipeline = AnomalyDetectionPipeline()
         anomalies = pipeline.detect("mrr", 100.0, date(2025, 1, 15), [])
