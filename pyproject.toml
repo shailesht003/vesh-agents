@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "vesh-agents"
-version = "0.1.0"
+version = "0.1.1"
 description = "Open-source agentic framework for revenue intelligence. 6 AI agents that extract, resolve, compute, detect, and explain your business data."
 readme = "README.md"
 license = "Apache-2.0"
